@@ -240,7 +240,7 @@ def zwaveEvent(physicalgraph.zwave.commands.switchmultilevelv1.SwitchMultilevelS
 
 def zwaveEvent(physicalgraph.zwave.Command cmd) {
 	// Handles all Z-Wave commands we aren't interested in
-    log.debug "zwaveEvent catchall: ${cmd.inspect()}"
+    log.debug "zwaveEvent catchall: $cmd"
 	[:]
 }
 
