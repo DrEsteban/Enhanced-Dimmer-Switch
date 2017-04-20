@@ -149,6 +149,19 @@ def parse(String description) {
 	return result
 }
 
+def zwaveEvent(physicalgraph.zwave.commands.crc16encapv1.Crc16Encap cmd) {
+	log.debug "zwaveEvent(): CRC-16 Encapsulation Command received: ${cmd}"
+    def versions = [0x20: 1, 0x26: 1, 0x70: 1]
+    def version = versions[cmd.commandClass as Integer]
+    def ccObj = version ? zwave.commandClass(cmd.commandClass, version) : zwave.commandClass(cmd.commandClass)
+    def encapsulatedCommand = ccObj?.command(cmd.command)?.parse(cmd.data)
+    if (!encapsulatedCommand) {
+        log.error "zwaveEvent(): Could not extract command from ${cmd}"
+    } else {
+        return zwaveEvent(encapsulatedCommand)
+    }
+}
+
 def zwaveEvent(physicalgraph.zwave.commands.basicv1.BasicReport cmd) {
 	dimmerEvents(cmd)
 }
@@ -175,11 +188,35 @@ private dimmerEvents(physicalgraph.zwave.Command cmd) {
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.configurationv1.ConfigurationReport cmd) {
-	log.debug "ConfigurationReport $cmd"
-	def value = "when off"
-	if (cmd.configurationValue[0] == 1) {value = "when on"}
-	if (cmd.configurationValue[0] == 2) {value = "never"}
-	createEvent([name: "indicatorStatus", value: value])
+	log.debug "ConfigurationReport >> $cmd"
+    def returnVal = null
+    switch (cmd.parameterNumber) {
+    	case 3:
+            def value = "when off"
+            if (cmd.scaledConfigurationValue == 1) {value = "when on"}
+            if (cmd.scaledConfigurationValue == 2) {value = "never"}
+        	returnVal = createEvent([name: "indicatorStatus", value: value])
+            break
+        case 4:
+        	returnVal = createEvent([name: "invertSwitch", value: cmd.scaledConfigurationValue])
+            break
+        case 7:
+        	returnVal = createEvent([name: "zwaveStepSize", value: cmd.scaledConfigurationValue])
+            break
+        case 8:
+        	returnVal = createEvent([name: "zwaveStepDuration", value: cmd.scaledConfigurationValue])
+            break
+        case 9:
+        	returnVal = createEvent([name: "manualStepSize", value: cmd.scaledConfigurationValue])
+            break
+        case 10:
+        	returnVal = createEvent([name: "manualStepDuration", value: cmd.scaledConfigurationValue])
+            break
+        default:
+        	break
+    }
+    
+    return returnVal
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.hailv1.Hail cmd) {
@@ -203,6 +240,7 @@ def zwaveEvent(physicalgraph.zwave.commands.switchmultilevelv1.SwitchMultilevelS
 
 def zwaveEvent(physicalgraph.zwave.Command cmd) {
 	// Handles all Z-Wave commands we aren't interested in
+    log.debug "zwaveEvent catchall: ${cmd.inspect()}"
 	[:]
 }
 
