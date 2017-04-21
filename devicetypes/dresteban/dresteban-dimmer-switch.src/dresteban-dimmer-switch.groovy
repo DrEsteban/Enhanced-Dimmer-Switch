@@ -1,9 +1,9 @@
 /**
  *  Enhanced GE/Jasco Dimmer Switch
- *	Author: Ben W. (@desertBlade)
+ *	Author: Steven R. (@DrEsteban)
  *
  * Based off of the Dimmer Switch under Templates in the IDE 
- * Copyright (C) Ben W.
+ * Copyright (C) Steven R.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  *  in compliance with the License. You may obtain a copy of the License at:
@@ -81,11 +81,11 @@ metadata {
 			}
 		}
 
-		standardTile("indicator", "device.indicatorStatus", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
+		/*standardTile("indicator", "device.indicatorStatus", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
 			state "when off", action:"indicator.indicatorWhenOn", icon:"st.indicators.lit-when-off"
 			state "when on", action:"indicator.indicatorNever", icon:"st.indicators.lit-when-on"
 			state "never", action:"indicator.indicatorWhenOff", icon:"st.indicators.never-lit"
-		}
+		}*/
 
 		standardTile("refresh", "device.switch", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
 			state "default", label:'', action:"refresh.refresh", icon:"st.secondary.refresh"
@@ -96,9 +96,9 @@ metadata {
 		}
 
         
-        standardTile("updateSettings", "device.updateSettings", height: 2, width: 2, inactiveLabel: false, decoration: "flat") {
+        /*standardTile("updateSettings", "device.updateSettings", height: 2, width: 2, inactiveLabel: false, decoration: "flat") {
         	state "default" , action:"updateSettings", icon:"st.secondary.configure"
-        }
+        }*/
 
 
 		main(["switch"])
@@ -129,6 +129,7 @@ def updated(){
             indicatorWhenOn()
             break
     }
+    response(updateSettings())
 }
 
 def parse(String description) {
