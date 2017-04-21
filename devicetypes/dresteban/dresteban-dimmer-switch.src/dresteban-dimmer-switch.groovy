@@ -195,22 +195,22 @@ def zwaveEvent(physicalgraph.zwave.commands.configurationv1.ConfigurationReport 
             def value = "when off"
             if (cmd.scaledConfigurationValue == 1) {value = "when on"}
             if (cmd.scaledConfigurationValue == 2) {value = "never"}
-        	returnVal = createEvent([name: "indicatorStatus", value: value])
+        	returnVal = createEvent([name: "indicatorStatus", value: value, displayed: false])
             break
         case 4:
-        	returnVal = createEvent([name: "invertSwitch", value: cmd.scaledConfigurationValue])
+        	returnVal = createEvent([name: "invertSwitch", value: cmd.scaledConfigurationValue, displayed: false])
             break
         case 7:
-        	returnVal = createEvent([name: "zwaveStepSize", value: cmd.scaledConfigurationValue])
+        	returnVal = createEvent([name: "zwaveStepSize", value: cmd.scaledConfigurationValue, displayed: false])
             break
         case 8:
-        	returnVal = createEvent([name: "zwaveStepDuration", value: cmd.scaledConfigurationValue])
+        	returnVal = createEvent([name: "zwaveStepDuration", value: cmd.scaledConfigurationValue, displayed: false])
             break
         case 9:
-        	returnVal = createEvent([name: "manualStepSize", value: cmd.scaledConfigurationValue])
+        	returnVal = createEvent([name: "manualStepSize", value: cmd.scaledConfigurationValue, displayed: false])
             break
         case 10:
-        	returnVal = createEvent([name: "manualStepDuration", value: cmd.scaledConfigurationValue])
+        	returnVal = createEvent([name: "manualStepDuration", value: cmd.scaledConfigurationValue, displayed: false])
             break
         default:
         	break
@@ -300,9 +300,9 @@ def refresh() {
 	if (getDataValue("MSR") == null) {
 		commands << zwave.manufacturerSpecificV1.manufacturerSpecificGet().format()
 	}
-    for (cmd in getDimmerSettingsCmds()) {
-    	commands << cmd
-    }
+    //for (cmd in getDimmerSettingsCmds()) {
+    //	commands << cmd
+    //}
 	delayBetween(commands,200)
 }
 
